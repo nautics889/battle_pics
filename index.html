@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js" integrity="sha256-0YPKAwZP7Mp3ALMRVB2i8GXeEndvCq3eSl/WsAl1Ryk=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css">
+</head>
+<body>
+
+  <h1>Make battle picture dvach online</h1>
+  <div>
+    <input id="picFile" type="file">
+    <canvas id="myCanvas" width="400px" height="400px" style="border:1px solid #d3d3d3;">
+  </div>
+  <div id="slider"></div>
+  <script type="text/javascript">
+    var imgObj = new Image();
+    var mask = new Image();
+    mask.src = "https://i.imgur.com/qK6I3Q5.png";
+    var ctx = document.getElementById("myCanvas").getContext("2d");
+
+    var moveXAmount=0;
+    var moveYAmount=0;
+    var isDragging=false;
+    var prevX = 0;
+    var prevY = 0;
+
+
+    function handlePicture(e) {
+      imgObj.src = URL.createObjectURL(e.target.files[0]);
+      imgObj.onload = buildCanvas;
+    }
+    
+    function buildCanvas() {
+      document.getElementById("myCanvas").width = imgObj.width;
+      document.getElementById("myCanvas").height = imgObj.height;
+      ctx.drawImage(imgObj, 0, 0);
+      ctx.drawImage(mask, 0, 0);
+      
+    }
+
+    function calculateSizeCoef(value) {
+      return value / 100;
+    }
+
+    function updateImage(resize = undefined) {
+      if (resize === undefined) {
+        resize = $("#slider").slider('value');
+      }
+      ctx.clearRect(0, 0, $("#myCanvas").width(), $("#myCanvas").height());
+      ctx.drawImage(imgObj, 0, 0, imgObj.width, imgObj.height);
+
+      coef = calculateSizeCoef(resize);
+
+      ctx.drawImage(mask, moveXAmount, moveYAmount, 250 * coef, 500 * coef);
+    }
+
+    $("#myCanvas").mousedown(function() {
+      isDragging = true;
+      prevX=0;
+      prevY=0;
+    });
+
+    $(window).mouseup(function(){
+      isDragging = false;
+      prevX=0;
+      prevY=0;
+    });
+
+    $(window).mousemove(function(event) {
+      if( isDragging == true )
+      {
+        if( prevX>0 || prevY>0)
+        {
+          moveXAmount += event.pageX - prevX;
+          moveYAmount += event.pageY - prevY;
+          updateImage();
+        }
+        prevX = event.pageX;
+        prevY = event.pageY;
+      }
+    });
+
+    $("#picFile").change(handlePicture);
+
+    $("#slider").slider({
+      value: 100,
+      min: 50,
+      max: 200,
+      step: 1,
+      slide: function (event, ui) {
+        updateImage(ui.value);
+      }
+    });
+  </script>
+
+</body>
+</html>
