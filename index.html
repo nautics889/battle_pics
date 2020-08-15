@@ -5,15 +5,24 @@
 <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js" integrity="sha256-0YPKAwZP7Mp3ALMRVB2i8GXeEndvCq3eSl/WsAl1Ryk=" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="src/style.css">
 </head>
 <body>
 
-  <h1>Make battle picture dvach online</h1>
-  <div>
-    <input id="picFile" type="file">
-    <canvas id="myCanvas" width="400px" height="400px" style="border:1px solid #d3d3d3;">
+  <h1>Make battle picture for sosach online</h1>
+  <div class="wrapper">
+    <div>
+      <canvas id="imgCanvas" style="border:1px solid #d3d3d3;">
+    </div>
+    <div class="toolbar">
+      <input id="imgFileField" type="file">
+      <a id="download" download="" href="#">Download</a>
+      <div>
+        <p>Mask size:</p>
+        <div id="maskSizeSlider"></div>
+      </div>
+    </div>
   </div>
-  <div id="slider"></div>
   <script type="text/javascript" src="src/index.js"></script>
 
 </body>

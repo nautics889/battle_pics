@@ -1,7 +1,14 @@
 const imgObj = new Image();
-const ctx = document.getElementById("myCanvas").getContext("2d");
+const ctx = document.getElementById("imgCanvas").getContext("2d");
 
-let moveXAmount =0;
+const maskColor = '#dddddd';
+
+let mimeTypesMap = new Map()
+mimeTypesMap.set("jpg", "image/jpeg");
+mimeTypesMap.set("jpeg", "image/jpeg");
+mimeTypesMap.set("png", "image/png");
+
+let moveXAmount = 0;
 let moveYAmount = 0;
 let isDragging = false;
 let prevX = 0;
@@ -20,14 +27,9 @@ let bottomVertexY;
 const topVertexYShiftCoef = 0.4;
 const bottomVertexYShiftCoef = 0.6;
 
-function handlePicture(e) {
-  imgObj.src = URL.createObjectURL(e.target.files[0]);
-  imgObj.onload = initialCanvasDraw;
-}
-
 function initialCanvasDraw() {
-  document.getElementById("myCanvas").width = imgObj.width;
-  document.getElementById("myCanvas").height = imgObj.height;
+  document.getElementById("imgCanvas").width = imgObj.width;
+  document.getElementById("imgCanvas").height = imgObj.height;
   ctx.drawImage(imgObj, 0, 0);
   
   // drawing mask in shape of speech cloud
@@ -42,7 +44,7 @@ function initialCanvasDraw() {
 
   ctx.beginPath();
   ctx.arc(circleX, circleY, circleRadius, 0, 2 * Math.PI, false);
-  ctx.fillStyle = '#dddddd';
+  ctx.fillStyle = maskColor;
   ctx.fill();
 
   // triangle
@@ -59,25 +61,25 @@ function initialCanvasDraw() {
   ctx.moveTo(leftVertexX, leftVertexY);
   ctx.lineTo(topVertexX, topVertexY);
   ctx.lineTo(bottomVertexX, bottomVertexY);
-  ctx.fillStyle = '#dddddd';
+  ctx.fillStyle = maskColor;
   ctx.fill();
 
-  $("#slider").slider("enable");
-  $("#slider").slider("value", 100);
+  $("#maskSizeSlider").slider("enable");
+  $("#maskSizeSlider").slider("value", 100);
 }
 
 function updateCanvas(resize = undefined) {
   if (resize === undefined) {
-    resize = $("#slider").slider('value');
+    resize = $("#maskSizeSlider").slider('value');
   }
-  ctx.clearRect(0, 0, $("#myCanvas").width(), $("#myCanvas").height());
+  ctx.clearRect(0, 0, $("#imgCanvas").width(), $("#imgCanvas").height());
   ctx.drawImage(imgObj, 0, 0, imgObj.width, imgObj.height);
 
   const coef = resize / 100;
 
   ctx.beginPath();
   ctx.arc(circleX + moveXAmount, circleY + moveYAmount, Math.floor(circleRadius * coef), 0, 2 * Math.PI, false);
-  ctx.fillStyle = '#dddddd';
+  ctx.fillStyle = maskColor;
   ctx.fill();
 
   ctx.beginPath();
@@ -89,13 +91,13 @@ function updateCanvas(resize = undefined) {
   ctx.moveTo(Math.floor(circleX - ((circleX - leftVertexX) * coef)) + moveXAmount, leftVertexY + moveYAmount);
   ctx.lineTo(topVertexX - deltaX + moveXAmount, topVertexY - deltaY + moveYAmount); 
   ctx.lineTo(bottomVertexX - deltaX + moveXAmount, bottomVertexY + deltaY + moveYAmount);
-  ctx.fillStyle = '#dddddd';
+  ctx.fillStyle = maskColor;
   ctx.fill();
 }
 
 // control events
 
-$("#myCanvas").mousedown(function() {
+$("#imgCanvas").mousedown(function() {
   isDragging = true;
   prevX=0;
   prevY=0;
@@ -123,9 +125,26 @@ $(window).mousemove(function(event) {
 
 // file form and slider
 
-$("#picFile").change(handlePicture);
+$("#imgFileField").change(function (event) {
+  const filename = event.target.files[0].name;
+  if (!mimeTypesMap.has(filename.split(".")[filename.split(".").length - 1])) {
+    alert("Unable to upload this file.");
+    this.value = '';
+    return;
+  }
 
-$("#slider").slider({
+  document.getElementById("download").download = "battle_pic_" + filename;
+
+  imgObj.src = URL.createObjectURL(event.target.files[0]);
+  imgObj.onload = initialCanvasDraw;
+});
+
+$("#download").click(function(event) {
+  const ext = this.download.split(".")[this.download.split(".").length - 1];
+  this.href = document.getElementById("imgCanvas").toDataURL(mimeTypesMap.get(ext));
+})
+
+$("#maskSizeSlider").slider({
   value: 100,
   min: 50,
   max: 200,
@@ -136,4 +155,4 @@ $("#slider").slider({
   }
 });
 
-$("#slider").slider("disable");
+$("#maskSizeSlider").slider("disable");
