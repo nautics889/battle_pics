@@ -26,6 +26,16 @@
     var prevX = 0;
     var prevY = 0;
 
+    var maskX;
+    var maskY;
+    var maskRadius;
+    var leftVertexX;
+    var leftVertexY;
+    var topVertexX;
+    var topVertexY;
+    var bottomVertexX;
+    var bottomVertexY;
+
 
     function handlePicture(e) {
       imgObj.src = URL.createObjectURL(e.target.files[0]);
@@ -36,8 +46,29 @@
       document.getElementById("myCanvas").width = imgObj.width;
       document.getElementById("myCanvas").height = imgObj.height;
       ctx.drawImage(imgObj, 0, 0);
-      ctx.drawImage(mask, 0, 0);
       
+      maskX = imgObj.width + Math.floor(imgObj.height * 0.8);
+      maskY = Math.floor(imgObj.height / 2);
+      maskRadius = imgObj.height;  // radius should equal height of an image
+      ctx.beginPath();
+      ctx.arc(maskX, maskY, maskRadius, 0, 2 * Math.PI, false);
+      ctx.fillStyle = '#dddddd';
+      ctx.fill();
+
+      leftVertexX = Math.floor(imgObj.width / 2);
+      leftVertexY = Math.floor(imgObj.height / 2);
+      topVertexX = imgObj.width;
+      topVertexY = Math.floor(imgObj.height * 0.4);
+      bottomVertexX = imgObj.width;
+      bottomVertexY = Math.floor(imgObj.height * 0.6);
+      
+      
+      ctx.beginPath();
+      ctx.moveTo(leftVertexX, leftVertexY);
+      ctx.lineTo(topVertexX, topVertexY);
+      ctx.lineTo(bottomVertexX, bottomVertexY);
+      ctx.fillStyle = '#dddddd';
+      ctx.fill();
     }
 
     function calculateSizeCoef(value) {
@@ -53,7 +84,22 @@
 
       coef = calculateSizeCoef(resize);
 
-      ctx.drawImage(mask, moveXAmount, moveYAmount, 250 * coef, 500 * coef);
+      ctx.beginPath();
+      ctx.arc(maskX + moveXAmount, maskY + moveYAmount, Math.floor(maskRadius * coef), 0, 2 * Math.PI, false);
+      ctx.fillStyle = '#dddddd';
+      ctx.fill();
+
+      ctx.beginPath();
+
+      var deltaTopVertexY = Math.floor(((bottomVertexY - topVertexY) * coef - (bottomVertexY - topVertexY)) / 2);
+      var deltaBotVertexY = Math.floor(((bottomVertexY - topVertexY) * coef - (bottomVertexY - topVertexY)) / 2);
+      var deltaRadius = Math.floor((maskRadius * coef) - maskRadius);
+
+      ctx.moveTo(Math.floor(maskX - ((maskX - leftVertexX) * coef)) + moveXAmount, leftVertexY + moveYAmount);
+      ctx.lineTo(topVertexX - deltaRadius + moveXAmount, topVertexY - deltaTopVertexY + moveYAmount); 
+      ctx.lineTo(bottomVertexX - deltaRadius + moveXAmount, bottomVertexY + deltaBotVertexY + moveYAmount);
+      ctx.fillStyle = '#dddddd';
+      ctx.fill();
     }
 
     $("#myCanvas").mousedown(function() {
