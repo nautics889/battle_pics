@@ -1,5 +1,4 @@
 body {
-  /* background: url("../assets/bg.png") no-repeat; */
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url("../assets/bg.png") no-repeat;
   background-color: #dddddd;
 }
@@ -12,10 +11,6 @@ h1 {
 /* #maskSizeSlider {
   max-width: 0.5em;
 } */
-
-#foobar {
-  min-width: 300px;
-}
 
 .wrapper {
   display: flex;

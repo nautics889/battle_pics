@@ -1,3 +1,10 @@
+var $ = require('jquery');
+require('webpack-jquery-ui');
+require('webpack-jquery-ui/css');
+require('webpack-jquery-ui/slider');
+require('webpack-jquery-ui/widgets');
+require('./style.css');
+
 const imgObj = new Image();
 const ctx = document.getElementById("imgCanvas").getContext("2d");
 
@@ -142,7 +149,7 @@ $("#imgFileField").change(function (event) {
 $("#download").click(function(event) {
   const ext = this.download.split(".")[this.download.split(".").length - 1];
   this.href = document.getElementById("imgCanvas").toDataURL(mimeTypesMap.get(ext));
-})
+});
 
 $("#maskSizeSlider").slider({
   value: 100,
