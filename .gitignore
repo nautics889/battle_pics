@@ -1,9 +1,12 @@
 /node_modules
 dist
+./index.html
+src
 .DS_Store
 *.log
 .idea
 .vscode
 .cache
 .eslintcache
+package.json
 package-lock.json
