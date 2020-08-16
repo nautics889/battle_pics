@@ -6,7 +6,7 @@ module.exports = {
   },
   output: {
     filename: 'bundled.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist/www'),
     publicPath:'./'
   },
   module: {
@@ -20,14 +20,12 @@ module.exports = {
         loader:"file-loader",
         options:{
           name:'[name].[ext]',
-          outputPath:'assets/'
-          //the images will be emited to dist/assets/images/ folder
+          outputPath:'../assets/'
         }
       }
     ]
   },
   plugins: [
-    /* Use the ProvidePlugin constructor to inject jquery implicit globals */
     new webpack.ProvidePlugin({
         $: "jquery",
         jQuery: "jquery",
