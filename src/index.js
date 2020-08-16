@@ -1,8 +1,6 @@
 var $ = require('jquery');
-require('webpack-jquery-ui');
 require('webpack-jquery-ui/css');
 require('webpack-jquery-ui/slider');
-require('webpack-jquery-ui/widgets');
 require('./style.css');
 
 const imgObj = new Image();
