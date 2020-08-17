@@ -142,6 +142,8 @@ $("#imgFileField").change(function (event) {
 
   imgObj.src = URL.createObjectURL(event.target.files[0]);
   imgObj.onload = initialCanvasDraw;
+
+  $("#imgCanvas").css('cursor', 'pointer');
 });
 
 $("#download").click(function(event) {
