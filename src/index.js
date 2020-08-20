@@ -100,21 +100,23 @@ function updateCanvas(resize = undefined) {
   ctx.fill();
 }
 
+const mobileDevice = ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) ? true : false;
+
 // control events
 
-$("#imgCanvas").mousedown(function() {
-  isDragging = true;
-  prevX=0;
-  prevY=0;
-});
-
-$(window).mouseup(function(){
+const release = function(){
   isDragging = false;
   prevX=0;
   prevY=0;
-});
+}
 
-$(window).mousemove(function(event) {
+const pinch = function() {
+  isDragging = true;
+  prevX=0;
+  prevY=0;
+}
+
+const moving = function(event) {
   if( isDragging === true )
   {
     if( prevX>0 || prevY>0)
@@ -126,7 +128,17 @@ $(window).mousemove(function(event) {
     prevX = event.pageX;
     prevY = event.pageY;
   }
-});
+};
+
+if (mobileDevice) {
+  $("#imgCanvas").on("touchstart", pinch);
+  $(window).on("touchend", release);
+  $(window).on("touchmove", moving);
+} else {
+  $("#imgCanvas").mousedown(pinch);
+  $(window).mouseup(release);
+  $(window).mousemove(moving);
+}
 
 // file form and slider
 
