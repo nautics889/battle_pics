@@ -1,7 +1,12 @@
-var $ = require('jquery');
-require('webpack-jquery-ui/css');
-require('webpack-jquery-ui/slider');
-require('./style.css');
+try {
+  var $ = require('jquery');
+  require('webpack-jquery-ui/css');
+  require('webpack-jquery-ui/slider');
+  require('./style.css');
+} catch {
+  console.warn("You are probably running a development version.");
+  console.log(e);
+}
 
 const imgObj = new Image();
 const ctx = document.getElementById("imgCanvas").getContext("2d");
@@ -142,20 +147,33 @@ if (mobileDevice) {
 
 // file form and slider
 
-$("#imgFileField").change(function (event) {
-  const filename = event.target.files[0].name;
-  if (!mimeTypesMap.has(filename.split(".")[filename.split(".").length - 1])) {
+function handleFile (file) {
+  try {
+    const filename = file.name;
+    if (!mimeTypesMap.has(filename.split(".")[filename.split(".").length - 1])) {
+      alert("Unable to upload this file.");
+      this.value = '';
+      return;
+    }
+
+    document.getElementById("download").download = "battle_pic_" + filename;
+
+    imgObj.src = URL.createObjectURL(file);
+    imgObj.onload = initialCanvasDraw;
+
+    $("#imgCanvas").css('cursor', 'pointer');
+  } catch (e) {
     alert("Unable to upload this file.");
-    this.value = '';
-    return;
+    console.log(e);
   }
+};
 
-  document.getElementById("download").download = "battle_pic_" + filename;
+$("#imgFileField").change(function(event) {
+  handleFile(event.target.files[0]);
+});
 
-  imgObj.src = URL.createObjectURL(event.target.files[0]);
-  imgObj.onload = initialCanvasDraw;
-
-  $("#imgCanvas").css('cursor', 'pointer');
+window.addEventListener('paste', function(event) {
+  handleFile(event.clipboardData.files[0]);
 });
 
 $("#download").click(function(event) {
