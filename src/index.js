@@ -3,7 +3,7 @@ try {
   require('webpack-jquery-ui/css');
   require('webpack-jquery-ui/slider');
   require('./style.css');
-} catch {
+} catch (e) {
   console.warn("You are probably running a development version.");
   console.log(e);
 }
