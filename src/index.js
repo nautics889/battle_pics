@@ -76,16 +76,21 @@ function initialCanvasDraw() {
 
   $("#maskSizeSlider").slider("enable");
   $("#maskSizeSlider").slider("value", 100);
+
+  $("#tipWidthSlider").slider("enable");
 }
 
-function updateCanvas(resize = undefined) {
-  if (resize === undefined) {
-    resize = $("#maskSizeSlider").slider('value');
-  }
+function updateCanvas(correction) {
+  const resize = (correction === undefined || correction.resize === undefined) ? $("#maskSizeSlider").slider('value') : correction.resize;
+  const leftVertexXShift = (correction === undefined || correction.leftVertexXShift === undefined) ? $("#tipWidthSlider").slider('value') : correction.leftVertexXShift;
+  
+  console.log(leftVertexXShift);
+
   ctx.clearRect(0, 0, $("#imgCanvas").width(), $("#imgCanvas").height());
   ctx.drawImage(imgObj, 0, 0, imgObj.width, imgObj.height);
 
   const coef = resize / 100;
+  const leftVertexXShiftAbsolute = Math.floor((imgObj.width / 4) / 100 * leftVertexXShift) * -1;
 
   ctx.beginPath();
   ctx.arc(circleX + moveXAmount, circleY + moveYAmount, Math.floor(circleRadius * coef), 0, 2 * Math.PI, false);
@@ -98,7 +103,7 @@ function updateCanvas(resize = undefined) {
   const deltaX = Math.floor((circleRadius * coef) - circleRadius);
   const deltaY = Math.floor(((bottomVertexY - topVertexY) * coef - (bottomVertexY - topVertexY)) / 2);
 
-  ctx.moveTo(Math.floor(circleX - ((circleX - leftVertexX) * coef)) + moveXAmount, leftVertexY + moveYAmount);
+  ctx.moveTo(Math.floor(circleX - ((circleX - leftVertexX) * coef)) + moveXAmount + leftVertexXShiftAbsolute, leftVertexY + moveYAmount);
   ctx.lineTo(topVertexX - deltaX + moveXAmount, topVertexY - deltaY + moveYAmount); 
   ctx.lineTo(bottomVertexX - deltaX + moveXAmount, bottomVertexY + deltaY + moveYAmount);
   ctx.fillStyle = maskColor;
@@ -188,8 +193,21 @@ $("#maskSizeSlider").slider({
   step: 1,
   disable: true,
   slide: function (event, ui) {
-    updateCanvas(ui.value);
+    updateCanvas({ resize: ui.value });
   }
 });
 
 $("#maskSizeSlider").slider("disable");
+
+$("#tipWidthSlider").slider({
+  value: 0,
+  min: -100,
+  max: 100,
+  step: 1,
+  disable: true,
+  slide: function (event, ui) {
+    updateCanvas({ leftVertexXShift: ui.value });
+  }
+});
+
+$("#tipWidthSlider").slider("disable");
